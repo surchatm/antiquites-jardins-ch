@@ -54,7 +54,7 @@ const Contact = () => {
                             Téléphone
                           </h3>
                           <a href="tel:+41261234567" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                            +41 26 123 45 67
+                            +41 79 458 78 20
                           </a>
                         </div>
                       </div>
@@ -71,7 +71,7 @@ const Contact = () => {
                           <h3 className="font-display font-semibold text-foreground mb-1">
                             Email
                           </h3>
-                          <a href="mailto:contact@antiquites-jardins.ch" className="text-sm text-muted-foreground hover:text-primary transition-colors break-all">
+                          <a href="mailto:eric.surchat@gmail.com" className="text-sm text-muted-foreground hover:text-primary transition-colors break-all">
                             contact@antiquites-jardins.ch
                           </a>
                         </div>
@@ -90,7 +90,8 @@ const Contact = () => {
                             Adresse
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            1630 Bulle<br />
+                            Rue de l'Ancien Comté 90
+                            1635 La Tour-de-Trême<br />
                             Suisse
                           </p>
                         </div>

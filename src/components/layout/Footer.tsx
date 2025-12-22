@@ -7,21 +7,7 @@ const Footer = () => {
             <h3 className="font-display text-lg font-semibold text-foreground mb-3">
               Antiquités et Jardins
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">Pièces uniques et objets anciens sélectionnés avec passion par Eric Surchat à La Tour-de-Trême – Bulle, Suisse.</p>
-          </div>
-
-          <div>
-            <h4 className="font-display text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-              Navigation
-            </h4>
-            <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Accueil
-              </Link>
-              <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Contact
-              </Link>
-            </nav>
+            <p className="text-sm text-muted-foreground leading-relaxed">Pièces uniques et objets anciens sélectionnés avec passion par Eric Surchat à La Tour-de-Trême, Bulle, Suisse.</p>
           </div>
 
           <div>

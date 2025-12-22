@@ -22,12 +22,12 @@ const Index = () => {
           <div className="container relative">
             <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
               <span className="inline-block text-xs font-medium tracking-[0.3em] text-primary uppercase mb-4">
-                Bulle, Suisse
+                La Tour-de-Trême, Suisse
               </span>
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
                 Antiquités et Jardins
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">Une sélection raffinée de pièces et objets anciens, choisis avec passion pour sublimer votre intérieur et votre jardin.</p>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">Une sélection raffinée de pièces et objets anciens choisis avec passion pour sublimer votre intérieur et votre jardin.</p>
             </div>
           </div>
         </section>
