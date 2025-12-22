@@ -151,7 +151,7 @@ const Auth = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            {/* <div className="mt-6 text-center">
               <button
                 type="button"
                 onClick={() => setIsSignUp(!isSignUp)}
@@ -162,7 +162,7 @@ const Auth = () => {
                   ? "Déjà un compte ? Se connecter"
                   : "Pas de compte ? S'inscrire"}
               </button>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
