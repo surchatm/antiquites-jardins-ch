@@ -12,7 +12,7 @@ const Index = () => {
   return <>
       <Helmet>
         <title>Antiquités et Jardins | Eric Surchat - Bulle, Suisse</title>
-        <meta name="description" content="Découvrez notre collection d'antiquités et objets de charme sélectionnés avec passion à Bulle, Suisse. Pièces uniques pour votre intérieur et jardin." />
+        <meta name="description" content="Découvrez notre collection d'antiquités et objets anciens sélectionnés avec passion à La Tour-de-Trême – Bulle, Suisse. Pièces uniques pour votre intérieur et jardin." />
       </Helmet>
 
       <Layout>

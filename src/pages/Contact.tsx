@@ -6,7 +6,7 @@ const Contact = () => {
   return <>
       <Helmet>
         <title>Contact | Antiquités et Jardins - Eric Surchat</title>
-        <meta name="description" content="Contactez Antiquités et Jardins à Bulle, Suisse. Découvrez nos coordonnées, horaires et localisation pour visiter notre boutique d'antiquités." />
+        <meta name="description" content="Contactez Antiquités et Jardins à La Tour-de-Trême – Bulle, Suisse. Découvrez nos coordonnées, horaires et localisation pour visiter notre boutique d'antiquités." />
       </Helmet>
 
       <Layout>

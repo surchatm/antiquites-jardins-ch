@@ -29,9 +29,9 @@ const Footer = () => {
               Contact
             </h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <p>Bulle, Suisse</p>
-              <a href="mailto:contact@antiquites-jardins.ch" className="hover:text-primary transition-colors">
-                contact@antiquites-jardins.ch
+              <p>La Tour-de-Trême – Bulle, Suisse</p>
+              <a href="mailto:eric.surchat@gmail.com" className="hover:text-primary transition-colors">
+                eric.surchat@antiquites-jardins.ch
               </a>
             </div>
           </div>
