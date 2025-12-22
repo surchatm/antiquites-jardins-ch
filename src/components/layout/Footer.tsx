@@ -25,7 +25,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-display text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">La Tour-de-Trême, Bulle, Suisse</h4>
+            <h4 className="font-display text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
+              Contact
+            </h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <p>Bulle, Suisse</p>
               <a href="mailto:contact@antiquites-jardins.ch" className="hover:text-primary transition-colors">
