@@ -123,12 +123,16 @@ const Contact = () => {
               <div className="animate-fade-in-up" style={{
               animationDelay: "200ms"
             }}>
-                <Card className="border-border/50 shadow-card overflow-hidden h-full min-h-[400px]">
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22008.492035989!2d7.0415!3d46.6167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478e6e4b7c7b7e7f%3A0x400ff8840182c70!2s1630%20Bulle%2C%20Switzerland!5e0!3m2!1sen!2sus!4v1703001234567!5m2!1sen!2sus" width="100%" height="100%" style={{
-                  border: 0,
-                  minHeight: "400px"
-                }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Localisation Antiquités et Jardins - Bulle, Suisse" />
-                </Card>
+              <Card className="border-border/50 shadow-card overflow-hidden h-full min-h-[400px]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2741.068066459808!2d7.068661!3d46.6056578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478e89d8c8c5242d%3A0x7a66bcbd3c4323a1!2sAntiquit%C3%A9s%20et%20jardins!5e0!3m2!1sen!2sch!4v1766424440573!5m2!1sen!2sch"
+                  className="w-full h-full min-h-[400px] border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Antiquités et Jardins - Bulle, Suisse"
+                />
+              </Card>
               </div>
             </div>
           </div>
