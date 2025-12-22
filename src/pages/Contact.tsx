@@ -90,7 +90,7 @@ const Contact = () => {
                             Adresse
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            Rue de l'Ancien Comté 90
+                            Rue de l'Ancien Comté 90<br />
                             1635 La Tour-de-Trême<br />
                             Suisse
                           </p>
