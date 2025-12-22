@@ -1,17 +1,13 @@
 import { Link } from "react-router-dom";
-
 const Footer = () => {
-  return (
-    <footer className="border-t border-border bg-card">
+  return <footer className="border-t border-border bg-card">
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
             <h3 className="font-display text-lg font-semibold text-foreground mb-3">
               Antiquités et Jardins
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Pièces uniques et objets de charme sélectionnés avec passion par Eric Surchat à Bulle, Suisse.
-            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">Pièces uniques et objets anciens sélectionnés avec passion par Eric Surchat à La Tour-de-Trême, Suisse.</p>
           </div>
 
           <div>
@@ -47,8 +43,6 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
