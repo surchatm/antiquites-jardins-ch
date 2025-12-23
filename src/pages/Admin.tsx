@@ -10,11 +10,12 @@ import {
   useDeleteAntique,
   Antique,
 } from "@/hooks/useAntiques";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, LogOut, Loader2, Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 const antiqueSchema = z.object({
   title: z.string().min(1, "Le titre est requis").max(100, "Le titre est trop long"),
@@ -44,6 +46,18 @@ const antiqueSchema = z.object({
   price: z.number().min(0, "Le prix doit être positif"),
   image_url: z.string().url("URL d'image invalide").optional().or(z.literal("")),
 });
+
+// Google Drive Picker configuration
+declare global {
+  interface Window {
+    gapi: any;
+    google: any;
+  }
+}
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || "";
+const GOOGLE_SCOPES = "https://www.googleapis.com/auth/drive.readonly";
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
@@ -62,6 +76,94 @@ const Admin = () => {
     image_url: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [googleDriveLoading, setGoogleDriveLoading] = useState(false);
+  const [gapiLoaded, setGapiLoaded] = useState(false);
+  const [gisLoaded, setGisLoaded] = useState(false);
+
+  // Load Google API scripts
+  useEffect(() => {
+    // Load GAPI
+    const gapiScript = document.createElement("script");
+    gapiScript.src = "https://apis.google.com/js/api.js";
+    gapiScript.async = true;
+    gapiScript.defer = true;
+    gapiScript.onload = () => {
+      window.gapi.load("picker", () => {
+        setGapiLoaded(true);
+      });
+    };
+    document.body.appendChild(gapiScript);
+
+    // Load GIS (Google Identity Services)
+    const gisScript = document.createElement("script");
+    gisScript.src = "https://accounts.google.com/gsi/client";
+    gisScript.async = true;
+    gisScript.defer = true;
+    gisScript.onload = () => {
+      setGisLoaded(true);
+    };
+    document.body.appendChild(gisScript);
+
+    return () => {
+      document.body.removeChild(gapiScript);
+      document.body.removeChild(gisScript);
+    };
+  }, []);
+
+  const handleGoogleDriveClick = async () => {
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) {
+      toast.error("Configuration Google Drive manquante. Contactez l'administrateur.");
+      return;
+    }
+
+    if (!gapiLoaded || !gisLoaded) {
+      toast.error("Chargement de Google Drive en cours...");
+      return;
+    }
+
+    setGoogleDriveLoading(true);
+
+    try {
+      // Get OAuth token
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: GOOGLE_SCOPES,
+        callback: (response: any) => {
+          if (response.access_token) {
+            openPicker(response.access_token);
+          } else {
+            setGoogleDriveLoading(false);
+            toast.error("Erreur d'authentification Google");
+          }
+        },
+      });
+
+      tokenClient.requestAccessToken({ prompt: "" });
+    } catch (error: any) {
+      setGoogleDriveLoading(false);
+      toast.error("Erreur Google Drive: " + error.message);
+    }
+  };
+
+  const openPicker = (accessToken: string) => {
+    const picker = new window.google.picker.PickerBuilder()
+      .addView(window.google.picker.ViewId.DOCS_IMAGES)
+      .setOAuthToken(accessToken)
+      .setDeveloperKey(GOOGLE_API_KEY)
+      .setCallback(async (data: any) => {
+        if (data.action === window.google.picker.Action.PICKED) {
+          const file = data.docs[0];
+          // Get the direct image URL
+          const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+          setFormData((prev) => ({ ...prev, image_url: imageUrl }));
+          toast.success("Image sélectionnée depuis Google Drive");
+        }
+        setGoogleDriveLoading(false);
+      })
+      .build();
+
+    picker.setVisible(true);
+  };
 
   useEffect(() => {
     if (!loading && !user) {
@@ -294,23 +396,17 @@ const Admin = () => {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="image_url">URL de l'image</Label>
-                    <Input
-                      id="image_url"
-                      type="url"
-                      value={formData.image_url}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image_url: e.target.value })
-                      }
-                      placeholder="https://example.com/image.jpg"
-                    />
-                    {formErrors.image_url && (
-                      <p className="text-xs text-destructive">
-                        {formErrors.image_url}
-                      </p>
-                    )}
-                  </div>
+                  <ImageUploader
+                    value={formData.image_url}
+                    onChange={(url) => setFormData({ ...formData, image_url: url })}
+                    onGoogleDriveClick={handleGoogleDriveClick}
+                    googleDriveLoading={googleDriveLoading}
+                  />
+                  {formErrors.image_url && (
+                    <p className="text-xs text-destructive">
+                      {formErrors.image_url}
+                    </p>
+                  )}
 
                   <div className="flex justify-end gap-3 pt-4">
                     <Button
