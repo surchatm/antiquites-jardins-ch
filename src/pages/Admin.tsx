@@ -178,7 +178,7 @@ const Admin = () => {
         scope: GOOGLE_SCOPES,
         callback: (response: any) => {
           if (response.access_token) {
-            openPicker(response.access_token);
+            setTimeout(() => openPicker(response.access_token), 100);
           } else {
             setGoogleDriveLoading(false);
             toast.error("Erreur d'authentification Google");
@@ -196,11 +196,11 @@ const Admin = () => {
   const openPicker = (accessToken: string) => {
     // Create a DocsView for images
     const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
-      .setMimeTypes('image/png,image/jpeg,image/webp') // only images
+      .setMimeTypes('image/png,image/jpeg,image/webp')
       .setIncludeFolders(true)
       .setSelectFolderEnabled(false)
-      .setMode(window.google.picker.DocsViewMode.LIST) // optional: list view
-      .setSortBy(window.google.picker.DocsView.SortBy.LAST_MODIFIED); // ✅ sort by last modified
+      .setMode(window.google.picker.DocsViewMode.LIST) 
+      .setSortBy(window.google.picker.DocsView.SortBy.LAST_MODIFIED);
 
     const picker = new window.google.picker.PickerBuilder()
       .addView(view)
