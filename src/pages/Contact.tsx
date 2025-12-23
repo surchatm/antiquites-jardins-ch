@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import Layout from "@/components/layout/Layout";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import boutiqueImage from "@/assets/boutique.webp";
 const Contact = () => {
   return <>
       <Helmet>
@@ -21,6 +22,13 @@ const Contact = () => {
                 N'hésitez pas à nous rendre visite ou à nous contacter pour toute 
                 question concernant nos pièces ou pour prendre rendez-vous.
               </p>
+              <div className="mt-8">
+                <img 
+                  src={boutiqueImage} 
+                  alt="Boutique Antiquités et Jardins à La Tour-de-Trême" 
+                  className="w-full max-w-4xl mx-auto rounded-lg shadow-card"
+                />
+              </div>
             </div>
           </div>
         </section>
