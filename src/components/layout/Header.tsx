@@ -36,6 +36,12 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
+          <Link
+            to="/admin"
+            className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+          >
+            Admin
+          </Link>
         </nav>
       </div>
     </header>
