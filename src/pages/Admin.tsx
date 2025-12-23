@@ -194,14 +194,21 @@ const Admin = () => {
   };
 
   const openPicker = (accessToken: string) => {
+    // Create a DocsView for images
+    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+      .setMimeTypes('image/png,image/jpeg,image/webp') // only images
+      .setIncludeFolders(true)
+      .setSelectFolderEnabled(false)
+      .setMode(window.google.picker.DocsViewMode.LIST) // optional: list view
+      .setSortBy(window.google.picker.DocsView.SortBy.LAST_MODIFIED); // ✅ sort by last modified
+
     const picker = new window.google.picker.PickerBuilder()
-      .addView(window.google.picker.ViewId.DOCS_IMAGES)
+      .addView(view)
       .setOAuthToken(accessToken)
       .setDeveloperKey(GOOGLE_API_KEY)
       .setCallback(async (data: any) => {
         if (data.action === window.google.picker.Action.PICKED) {
           const file = data.docs[0];
-          // Get the direct image URL
           const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
           setFormData((prev) => ({ ...prev, image_url: imageUrl }));
           toast.success("Image sélectionnée depuis Google Drive");
@@ -212,6 +219,7 @@ const Admin = () => {
 
     picker.setVisible(true);
   };
+
 
   useEffect(() => {
     if (!loading && !user) {
