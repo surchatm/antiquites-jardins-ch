@@ -8,6 +8,7 @@ import {
   useCreateAntique,
   useUpdateAntique,
   useDeleteAntique,
+  useReorderAntiques,
   Antique,
 } from "@/hooks/useAntiques";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,22 +24,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, LogOut, Loader2, Home } from "lucide-react";
+import { Plus, LogOut, Loader2, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import ImageUploader from "@/components/admin/ImageUploader";
+import SortableAntiqueCard from "@/components/admin/SortableAntiqueCard";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
 
 const antiqueSchema = z.object({
   title: z.string().min(1, "Le titre est requis").max(100, "Le titre est trop long"),
@@ -66,7 +72,9 @@ const Admin = () => {
   const createAntique = useCreateAntique();
   const updateAntique = useUpdateAntique();
   const deleteAntique = useDeleteAntique();
+  const reorderAntiques = useReorderAntiques();
 
+  const [localAntiques, setLocalAntiques] = useState<Antique[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAntique, setEditingAntique] = useState<Antique | null>(null);
   const [formData, setFormData] = useState({
@@ -79,6 +87,46 @@ const Admin = () => {
   const [googleDriveLoading, setGoogleDriveLoading] = useState(false);
   const [gapiLoaded, setGapiLoaded] = useState(false);
   const [gisLoaded, setGisLoaded] = useState(false);
+
+  // Sync local state with server data
+  useEffect(() => {
+    if (antiques) {
+      setLocalAntiques(antiques);
+    }
+  }, [antiques]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setLocalAntiques((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        const newItems = arrayMove(items, oldIndex, newIndex);
+
+        // Update positions in database
+        const updates = newItems.map((item, index) => ({
+          id: item.id,
+          position: index + 1,
+        }));
+        reorderAntiques.mutate(updates);
+
+        return newItems;
+      });
+    }
+  };
 
   // Load Google API scripts
   useEffect(() => {
@@ -321,7 +369,7 @@ const Admin = () => {
                 Gestion des articles
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Ajoutez, modifiez ou supprimez les antiquités en vente
+                Glissez-déposez pour réorganiser les articles
               </p>
             </div>
 
@@ -449,79 +497,29 @@ const Admin = () => {
                 </Card>
               ))}
             </div>
-          ) : antiques && antiques.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {antiques.map((antique) => (
-                <Card key={antique.id} className="border-border/50 shadow-card">
-                  <CardContent className="p-4">
-                    <div className="aspect-[4/3] rounded-md overflow-hidden bg-muted mb-4">
-                      {antique.image_url ? (
-                        <img
-                          src={antique.image_url}
-                          alt={antique.title}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center bg-secondary">
-                          <span className="font-display text-2xl text-muted-foreground/30">
-                            A&J
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="font-display font-semibold text-foreground mb-1 line-clamp-1">
-                      {antique.title}
-                    </h3>
-                    {antique.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {antique.description}
-                      </p>
-                    )}
-                    <p className="font-display text-lg font-semibold text-primary mb-4">
-                      {formatPrice(Number(antique.price))}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => openEditDialog(antique)}
-                      >
-                        <Pencil className="w-4 h-4 mr-1" />
-                        Modifier
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="font-display">
-                              Supprimer cet article ?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Cette action est irréversible. L'article "{antique.title}"
-                              sera définitivement supprimé.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(antique.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          ) : localAntiques && localAntiques.length > 0 ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={localAntiques.map((a) => a.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {localAntiques.map((antique) => (
+                    <SortableAntiqueCard
+                      key={antique.id}
+                      antique={antique}
+                      onEdit={openEditDialog}
+                      onDelete={handleDelete}
+                      formatPrice={formatPrice}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           ) : (
             <Card className="border-border/50 shadow-card">
               <CardContent className="py-12 text-center">
