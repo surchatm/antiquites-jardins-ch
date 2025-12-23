@@ -30,7 +30,7 @@ const Footer = () => {
             </h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <p>La Tour-de-Trême – Bulle, Suisse</p>
-              <a href="mailto:eric.surchat@gmail.com" className="hover:text-primary transition-colors">
+              <a href="mailto:eric.surchat@antiquites-jardins.ch" className="hover:text-primary transition-colors">
                 eric.surchat@antiquites-jardins.ch
               </a>
             </div>
