@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "antiquites-jardins.ch"
+        }
+      ],
+      "destination": "https://www.antiquites-jardins.ch/$1",
+      "permanent": true
+    }
+  ]
+}
