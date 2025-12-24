@@ -348,36 +348,44 @@ const Admin = () => {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container flex h-16 items-center justify-between">
-            <div>
-              <h1 className="font-display text-lg font-semibold text-foreground">
+          <div className="container px-4 sm:px-6 flex h-14 sm:h-16 items-center justify-between">
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-base sm:text-lg font-semibold text-foreground truncate">
                 Administration
               </h1>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{user.email}</p>
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <Button variant="ghost" size="sm" className="hidden sm:flex" asChild>
                 <Link to="/">
                   <Home className="w-4 h-4 mr-2" />
                   Voir le site
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <Button variant="ghost" size="icon" className="sm:hidden" asChild>
+                <Link to="/">
+                  <Home className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="hidden sm:flex">
                 <LogOut className="w-4 h-4 mr-2" />
                 Déconnexion
+              </Button>
+              <Button variant="outline" size="icon" onClick={handleSignOut} className="sm:hidden">
+                <LogOut className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="container py-8">
-          <div className="flex items-center justify-between mb-8">
+        <main className="container px-4 sm:px-6 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <div>
-              <h2 className="font-display text-2xl font-semibold text-foreground">
+              <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">
                 Gestion des articles
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Glissez-déposez pour réorganiser les articles
               </p>
             </div>
@@ -392,7 +400,7 @@ const Admin = () => {
               }}
             >
               <DialogTrigger asChild>
-                <Button variant="elegant">
+                <Button variant="elegant" className="w-full sm:w-auto">
                   <Plus className="w-4 h-4 mr-2" />
                   Ajouter un article
                 </Button>
