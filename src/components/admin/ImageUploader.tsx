@@ -81,15 +81,15 @@ const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading
       )}
 
       {!value && (
-        <Tabs defaultValue="upload" className="w-full">
+        <Tabs defaultValue="drive" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="upload">
-              <Upload className="w-4 h-4 mr-1" />
-              Fichier
-            </TabsTrigger>
             <TabsTrigger value="drive">
               <FolderOpen className="w-4 h-4 mr-1" />
               Drive
+            </TabsTrigger>
+            <TabsTrigger value="upload">
+              <Upload className="w-4 h-4 mr-1" />
+              Fichier
             </TabsTrigger>
             <TabsTrigger value="url">
               <LinkIcon className="w-4 h-4 mr-1" />

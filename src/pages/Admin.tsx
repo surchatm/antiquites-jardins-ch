@@ -194,26 +194,27 @@ const Admin = () => {
   };
 
   const openPicker = (accessToken: string) => {
-    // Create a DocsView for images
-    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
-      .setMimeTypes('image/png,image/jpeg,image/webp')
+    // Create a DocsView for images sorted by last modified
+    const view = new window.google.picker.DocsView()
+      .setMimeTypes('image/png,image/jpeg,image/webp,image/gif')
       .setIncludeFolders(true)
-      .setSelectFolderEnabled(false)
-      .setMode(window.google.picker.DocsViewMode.LIST) 
-      .setSortBy(window.google.picker.DocsView.SortBy.LAST_MODIFIED);
+      .setSelectFolderEnabled(false);
 
     const picker = new window.google.picker.PickerBuilder()
       .addView(view)
       .setOAuthToken(accessToken)
       .setDeveloperKey(GOOGLE_API_KEY)
+      .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
       .setCallback(async (data: any) => {
         if (data.action === window.google.picker.Action.PICKED) {
           const file = data.docs[0];
           const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
           setFormData((prev) => ({ ...prev, image_url: imageUrl }));
           toast.success("Image sélectionnée depuis Google Drive");
+          setGoogleDriveLoading(false);
+        } else if (data.action === window.google.picker.Action.CANCEL) {
+          setGoogleDriveLoading(false);
         }
-        setGoogleDriveLoading(false);
       })
       .build();
 
@@ -384,6 +385,8 @@ const Admin = () => {
             <Dialog
               open={isDialogOpen}
               onOpenChange={(open) => {
+                // Prevent closing while Google Drive picker is open
+                if (!open && googleDriveLoading) return;
                 setIsDialogOpen(open);
                 if (!open) resetForm();
               }}
@@ -394,7 +397,10 @@ const Admin = () => {
                   Ajouter un article
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg" onPointerDownOutside={(e) => {
+                // Prevent closing when clicking outside while picker is active
+                if (googleDriveLoading) e.preventDefault();
+              }}>
                 <DialogHeader>
                   <DialogTitle className="font-display">
                     {editingAntique ? "Modifier l'article" : "Nouvel article"}
