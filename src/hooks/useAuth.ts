@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Whitelist of allowed admin emails
 const ALLOWED_ADMIN_EMAILS = [
-  "laurent.music@gmail.com", // Your dad
-  // Add your email here when needed
+  "eric.surchat@gmail.com",
+  "surchat@gmail.com"
 ];
 
 export const useAuth = () => {
