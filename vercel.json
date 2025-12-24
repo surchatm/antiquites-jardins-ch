@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
       "source": "/(.*)",
@@ -15,7 +16,7 @@
 
   "rewrites": [
     { "source": "/admin", "destination": "/" },
-    { "source": "/admin/(.*)", "destination": "/" }
+    { "source": "/admin/(.*)", "destination": "/" },
     { "source": "/auth", "destination": "/" },
     { "source": "/auth/(.*)", "destination": "/" }
   ]
