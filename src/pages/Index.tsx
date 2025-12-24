@@ -17,29 +17,29 @@ const Index = () => {
 
       <Layout>
         {/* Hero Section */}
-        <section className="relative py-20 md:py-28 overflow-hidden">
+        <section className="relative py-12 sm:py-16 md:py-28 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/30 to-background" />
-          <div className="container relative">
+          <div className="container relative px-4 sm:px-6">
             <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
-              <span className="inline-block text-xs font-medium tracking-[0.3em] text-primary uppercase mb-4">
+              <span className="inline-block text-[10px] sm:text-xs font-medium tracking-[0.2em] sm:tracking-[0.3em] text-primary uppercase mb-3 sm:mb-4">
                 La Tour-de-Trême, Suisse
               </span>
-              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-4 sm:mb-6 leading-tight">
                 Antiquités et Jardins
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">Une sélection raffinée de pièces et objets anciens choisis avec passion pour sublimer votre intérieur et votre jardin.</p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto px-2">Une sélection raffinée de pièces et objets anciens choisis avec passion pour sublimer votre intérieur et votre jardin.</p>
             </div>
           </div>
         </section>
 
         {/* Collection Section */}
-        <section className="py-16 md:py-24">
-          <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-3">
+        <section className="py-10 sm:py-16 md:py-24">
+          <div className="container px-4 sm:px-6">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-semibold text-foreground mb-2 sm:mb-3">
                 Notre Collection
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Découvrez nos pièces actuellement disponibles
               </p>
             </div>

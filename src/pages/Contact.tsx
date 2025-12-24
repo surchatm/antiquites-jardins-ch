@@ -12,17 +12,17 @@ const Contact = () => {
 
       <Layout>
         {/* Hero Section */}
-        <section className="py-16 md:py-24">
-          <div className="container">
+        <section className="py-10 sm:py-16 md:py-24">
+          <div className="container px-4 sm:px-6">
             <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-6">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-4 sm:mb-6">
                 Nous Contacter
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed px-2">
                 N'hésitez pas à nous rendre visite ou à nous contacter pour toute 
                 question concernant nos pièces ou pour prendre rendez-vous.
               </p>
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 <img 
                   src={boutiqueImage} 
                   alt="Boutique Antiquités et Jardins à La Tour-de-Trême" 
@@ -34,34 +34,34 @@ const Contact = () => {
         </section>
 
         {/* Contact Info + Map */}
-        <section className="pb-20">
-          <div className="container">
-            <div className="grid gap-8 lg:grid-cols-2">
+        <section className="pb-12 sm:pb-20">
+          <div className="container px-4 sm:px-6">
+            <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
               {/* Contact Information */}
-              <div className="space-y-6 animate-fade-in-up">
+              <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 <Card className="border-border/50 shadow-card">
-                  <CardContent className="p-8">
-                    <h2 className="font-display text-xl font-semibold text-foreground mb-6">À propos de nous</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-6">Antiquités et Jardins est un magasin d'Antiquités fondé par Eric Surchat et situé à La Tour-de-Trême, au cœur de la Gruyère. Nous sélectionnons avec soin des pièces anciennes, meubles et objets décoratifs pour sublimer votre intérieur et votre jardin.</p>
-                    <p className="text-muted-foreground leading-relaxed">
+                  <CardContent className="p-5 sm:p-8">
+                    <h2 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-4 sm:mb-6">À propos de nous</h2>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4 sm:mb-6">Antiquités et Jardins est un magasin d'Antiquités fondé par Eric Surchat et situé à La Tour-de-Trême, au cœur de la Gruyère. Nous sélectionnons avec soin des pièces anciennes, meubles et objets décoratifs pour sublimer votre intérieur et votre jardin.</p>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                       Chaque objet raconte une histoire. Nous vous invitons à découvrir notre 
                       collection et à trouver la pièce unique qui enrichira votre espace de vie.
                     </p>
                   </CardContent>
                 </Card>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                   <Card className="border-border/50 shadow-card">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Phone className="w-5 h-5 text-primary" />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <div>
-                          <h3 className="font-display font-semibold text-foreground mb-1">
+                        <div className="min-w-0">
+                          <h3 className="font-display text-sm sm:text-base font-semibold text-foreground mb-1">
                             Téléphone
                           </h3>
-                          <a href="tel:+41261234567" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                          <a href="tel:+41794587820" className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors">
                             +41 79 458 78 20
                           </a>
                         </div>
@@ -70,16 +70,16 @@ const Contact = () => {
                   </Card>
 
                   <Card className="border-border/50 shadow-card">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Mail className="w-5 h-5 text-primary" />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <div>
-                          <h3 className="font-display font-semibold text-foreground mb-1">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-display text-sm sm:text-base font-semibold text-foreground mb-1">
                             Email
                           </h3>
-                          <a href="mailto:eric.surchat@antiquites-jardins.ch" className="text-sm text-muted-foreground hover:text-primary transition-colors break-all">
+                          <a href="mailto:eric.surchat@antiquites-jardins.ch" className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors break-all">
                             eric.surchat@antiquites-jardins.ch
                           </a>
                         </div>
@@ -88,16 +88,16 @@ const Contact = () => {
                   </Card>
 
                   <Card className="border-border/50 shadow-card">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-5 h-5 text-primary" />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <div>
-                          <h3 className="font-display font-semibold text-foreground mb-1">
+                        <div className="min-w-0">
+                          <h3 className="font-display text-sm sm:text-base font-semibold text-foreground mb-1">
                             Adresse
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             Rue de l'Ancien Comté 90<br />
                             1635 La Tour-de-Trême<br />
                             Suisse
@@ -108,16 +108,16 @@ const Contact = () => {
                   </Card>
 
                   <Card className="border-border/50 shadow-card">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Clock className="w-5 h-5 text-primary" />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
-                        <div>
-                          <h3 className="font-display font-semibold text-foreground mb-1">
+                        <div className="min-w-0">
+                          <h3 className="font-display text-sm sm:text-base font-semibold text-foreground mb-1">
                             Horaires
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             Sur rendez-vous
                           </p>
                         </div>
@@ -131,8 +131,8 @@ const Contact = () => {
               <div className="animate-fade-in-up" style={{
               animationDelay: "200ms"
             }}>
-              <Card className="border-border/50 shadow-card overflow-hidden h-full min-h-[400px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2741.068066459808!2d7.068661!3d46.6056578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478e89d8c8c5242d%3A0x7a66bcbd3c4323a1!2sAntiquit%C3%A9s%20et%20jardins!5e0!3m2!1sen!2sch!4v1766424440573!5m2!1sen!2sch" className="w-full h-full min-h-[400px] border-0" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Antiquités et Jardins - Bulle, Suisse" />
+              <Card className="border-border/50 shadow-card overflow-hidden h-full min-h-[300px] sm:min-h-[400px]">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2741.068066459808!2d7.068661!3d46.6056578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478e89d8c8c5242d%3A0x7a66bcbd3c4323a1!2sAntiquit%C3%A9s%20et%20jardins!5e0!3m2!1sen!2sch!4v1766424440573!5m2!1sen!2sch" className="w-full h-full min-h-[300px] sm:min-h-[400px] border-0" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Antiquités et Jardins - Bulle, Suisse" />
               </Card>
               </div>
             </div>
