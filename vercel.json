@@ -12,12 +12,5 @@
       "destination": "https://www.antiquites-jardins.ch/$1",
       "permanent": true
     }
-  ],
-
-  "rewrites": [
-    { "source": "/admin", "destination": "/" },
-    { "source": "/admin/(.*)", "destination": "/" },
-    { "source": "/auth", "destination": "/" },
-    { "source": "/auth/(.*)", "destination": "/" }
   ]
 }
