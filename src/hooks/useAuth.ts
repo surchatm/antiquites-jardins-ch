@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+// Whitelist of allowed admin emails
+const ALLOWED_ADMIN_EMAILS = [
+  "laurent.music@gmail.com", // Your dad
+  // Add your email here when needed
+];
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -15,11 +21,13 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer role check to avoid deadlock
+        // Check if user email is in whitelist
         if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
+          const userEmail = session.user.email?.toLowerCase();
+          const isAllowed = userEmail && ALLOWED_ADMIN_EMAILS.some(
+            email => email.toLowerCase() === userEmail
+          );
+          setIsAdmin(isAllowed ?? false);
         } else {
           setIsAdmin(false);
         }
@@ -32,7 +40,11 @@ export const useAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkAdminRole(session.user.id);
+        const userEmail = session.user.email?.toLowerCase();
+        const isAllowed = userEmail && ALLOWED_ADMIN_EMAILS.some(
+          email => email.toLowerCase() === userEmail
+        );
+        setIsAdmin(isAllowed ?? false);
       }
       setLoading(false);
     });
@@ -40,37 +52,11 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkAdminRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-
-    if (!error && data) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
       options: {
-        emailRedirectTo: redirectUrl,
+        redirectTo: `${window.location.origin}/admin`,
       },
     });
     return { error };
@@ -86,8 +72,8 @@ export const useAuth = () => {
     session,
     loading,
     isAdmin,
-    signIn,
-    signUp,
+    signInWithGoogle,
     signOut,
+    allowedEmails: ALLOWED_ADMIN_EMAILS,
   };
 };
