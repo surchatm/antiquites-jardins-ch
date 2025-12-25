@@ -208,7 +208,46 @@ const Admin = () => {
       .setCallback(async (data: any) => {
         if (data.action === window.google.picker.Action.PICKED) {
           const file = data.docs[0];
-          const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+          
+          // Use thumbnailLink from picker or construct proper URL
+          // Google Drive's lh3.googleusercontent.com URLs work better for embedding
+          let imageUrl = '';
+          
+          if (file.thumbnails && file.thumbnails.length > 0) {
+            // Get the largest thumbnail available
+            const largestThumb = file.thumbnails[file.thumbnails.length - 1];
+            // Remove size constraint to get full resolution
+            imageUrl = largestThumb.url.replace(/=s\d+$/, '=s1360');
+          } else if (file.iconUrl) {
+            // Fallback: use the file URL but with lh3.googleusercontent.com format
+            // Try to fetch the webContentLink through Drive API
+            try {
+              const response = await fetch(
+                `https://www.googleapis.com/drive/v3/files/${file.id}?fields=webContentLink,thumbnailLink&key=${GOOGLE_API_KEY}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              const fileData = await response.json();
+              if (fileData.thumbnailLink) {
+                // Use thumbnailLink and increase size
+                imageUrl = fileData.thumbnailLink.replace(/=s\d+$/, '=s1360');
+              } else if (fileData.webContentLink) {
+                imageUrl = fileData.webContentLink;
+              } else {
+                // Ultimate fallback
+                imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
+              }
+            } catch {
+              imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
+            }
+          } else {
+            // Fallback using thumbnail API
+            imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
+          }
+          
           setFormData((prev) => ({ ...prev, image_url: imageUrl }));
           toast.success("Image sélectionnée depuis Google Drive");
           setGoogleDriveLoading(false);
