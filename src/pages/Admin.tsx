@@ -398,6 +398,7 @@ const Admin = () => {
                 setIsDialogOpen(open);
                 if (!open) resetForm();
               }}
+              modal={!googleDriveLoading}
             >
               <DialogTrigger asChild>
                 <Button variant="elegant" className="w-full sm:w-auto">
@@ -405,10 +406,21 @@ const Admin = () => {
                   Ajouter un article
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg" onPointerDownOutside={(e) => {
-                // Prevent closing when clicking outside while picker is active
-                if (googleDriveLoading) e.preventDefault();
-              }}>
+              <DialogContent 
+                className="sm:max-w-lg" 
+                onPointerDownOutside={(e) => {
+                  // Prevent closing when clicking outside while picker is active
+                  if (googleDriveLoading) e.preventDefault();
+                }}
+                onOpenAutoFocus={(e) => {
+                  // Prevent focus trap from interfering with Google Drive picker
+                  if (googleDriveLoading) e.preventDefault();
+                }}
+                onInteractOutside={(e) => {
+                  // Allow interaction with Google Drive picker iframe
+                  if (googleDriveLoading) e.preventDefault();
+                }}
+              >
                 <DialogHeader>
                   <DialogTitle className="font-display">
                     {editingAntique ? "Modifier l'article" : "Nouvel article"}

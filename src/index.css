@@ -151,6 +151,12 @@
   }
 }
 
+/* Google Drive Picker should be above our dialogs */
+.picker-dialog,
+.picker-dialog-bg {
+  z-index: 10000 !important;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

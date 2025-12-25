@@ -135,8 +135,13 @@ const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading
               <Button
                 type="button"
                 variant="outline"
-                onClick={onGoogleDriveClick}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onGoogleDriveClick();
+                }}
                 disabled={googleDriveLoading}
+                style={{ pointerEvents: 'auto' }}
               >
                 {googleDriveLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
