@@ -18,6 +18,7 @@ export default {
         body: ['Lora', 'Georgia', 'serif'],
       },
       colors: {
+        bronze: "hsl(var(--bronze))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
