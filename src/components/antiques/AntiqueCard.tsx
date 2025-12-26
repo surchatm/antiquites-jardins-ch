@@ -23,7 +23,7 @@ const AntiqueCard = ({ title, description, price, imageUrl }: AntiqueCardProps) 
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
+            className="w-full max-h-64 sm:max-h-72 md:max-h-80 object-contain transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
           <div className="aspect-[4/3] flex items-center justify-center bg-secondary">
