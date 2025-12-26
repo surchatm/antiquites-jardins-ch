@@ -74,6 +74,13 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            <Link
+              to="/admin"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors py-2"
+            >
+              Admin
+            </Link>
           </div>
         </nav>
       )}

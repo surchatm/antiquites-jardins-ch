@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Layout from "@/components/layout/Layout";
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Loader2 } from "lucide-react";
@@ -7,28 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import boutiqueImage from "@/assets/boutique.webp";
 
 const RECIPIENT_EMAIL = "eric.surchat@antiquites-jardins.ch";
 const PHONE_NUMBER = "+41794587820";
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "";
-
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (callback: () => void) => void;
-      render: (container: string | HTMLElement, options: {
-        sitekey: string;
-        callback: (token: string) => void;
-        'expired-callback': () => void;
-        'error-callback': () => void;
-      }) => number;
-      reset: (widgetId?: number) => void;
-    };
-  }
-}
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -37,64 +21,14 @@ const Contact = () => {
     subject: "",
     message: "",
   });
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [captchaChecked, setCaptchaChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
-
-  const loadRecaptchaScript = useCallback(() => {
-    if (window.grecaptcha) {
-      setRecaptchaLoaded(true);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      setRecaptchaLoaded(true);
-    };
-    document.head.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    loadRecaptchaScript();
-  }, [loadRecaptchaScript]);
-
-  useEffect(() => {
-    if (recaptchaLoaded && window.grecaptcha && RECAPTCHA_SITE_KEY) {
-      window.grecaptcha.ready(() => {
-        const container = document.getElementById("recaptcha-container");
-        if (container && recaptchaWidgetId === null) {
-          try {
-            const widgetId = window.grecaptcha.render("recaptcha-container", {
-              sitekey: RECAPTCHA_SITE_KEY,
-              callback: (token: string) => {
-                setRecaptchaToken(token);
-              },
-              "expired-callback": () => {
-                setRecaptchaToken(null);
-              },
-              "error-callback": () => {
-                setRecaptchaToken(null);
-                toast.error("Erreur reCAPTCHA. Veuillez rafraîchir la page.");
-              },
-            });
-            setRecaptchaWidgetId(widgetId);
-          } catch (error) {
-            console.error("reCAPTCHA render error:", error);
-          }
-        }
-      });
-    }
-  }, [recaptchaLoaded, recaptchaWidgetId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!recaptchaToken) {
-      toast.error("Veuillez compléter la vérification reCAPTCHA");
+    if (!captchaChecked) {
+      toast.error("Veuillez confirmer que vous n'êtes pas un robot");
       return;
     }
 
@@ -105,47 +39,20 @@ const Contact = () => {
 
     setIsSubmitting(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke("send-contact-email", {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          recaptchaToken,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      toast.success("Votre message a été envoyé avec succès! Vous recevrez une confirmation par email.");
-      
-      // Reset form
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setRecaptchaToken(null);
-      
-      // Reset reCAPTCHA widget
-      if (window.grecaptcha && recaptchaWidgetId !== null) {
-        window.grecaptcha.reset(recaptchaWidgetId);
-      }
-    } catch (error: any) {
-      console.error("Error sending message:", error);
-      toast.error(error.message || "Une erreur est survenue lors de l'envoi du message");
-      
-      // Reset reCAPTCHA on error
-      if (window.grecaptcha && recaptchaWidgetId !== null) {
-        window.grecaptcha.reset(recaptchaWidgetId);
-      }
-      setRecaptchaToken(null);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Create mailto link with form data
+    const subject = encodeURIComponent(formData.subject || `Message de ${formData.name}`);
+    const body = encodeURIComponent(
+      `Nom: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    
+    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${body}`;
+    
+    toast.success("Votre client email va s'ouvrir avec votre message");
+    setIsSubmitting(false);
+    
+    // Reset form
+    setFormData({ name: "", email: "", subject: "", message: "" });
+    setCaptchaChecked(false);
   };
 
   const openWhatsApp = () => {
@@ -388,21 +295,31 @@ const Contact = () => {
                       />
                     </div>
 
-                    {/* Google reCAPTCHA */}
-                    <div className="flex justify-center">
-                      <div id="recaptcha-container"></div>
+                    {/* Simple Captcha */}
+                    <div className="flex items-start space-x-3 p-4 bg-muted/50 rounded-lg border border-border/50">
+                      <Checkbox
+                        id="captcha"
+                        checked={captchaChecked}
+                        onCheckedChange={(checked) => setCaptchaChecked(checked as boolean)}
+                        className="mt-0.5"
+                      />
+                      <div className="grid gap-1 leading-none">
+                        <Label
+                          htmlFor="captcha"
+                          className="text-sm font-medium cursor-pointer"
+                        >
+                          Je ne suis pas un robot
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Cochez cette case pour confirmer que vous êtes un humain
+                        </p>
+                      </div>
                     </div>
-
-                    {!RECAPTCHA_SITE_KEY && (
-                      <p className="text-xs text-center text-amber-600">
-                        reCAPTCHA non configuré. Veuillez configurer VITE_RECAPTCHA_SITE_KEY.
-                      </p>
-                    )}
 
                     <Button 
                       type="submit" 
                       className="w-full h-12 text-base gap-2"
-                      disabled={isSubmitting || !recaptchaToken}
+                      disabled={isSubmitting}
                     >
                       {isSubmitting ? (
                         <>
