@@ -151,9 +151,9 @@
   }
 }
 
-/* Google Drive Picker should be above our dialogs */
-.picker-dialog,
-.picker-dialog-bg {
+/* Cloudinary Media Library Widget should be above our dialogs */
+.cloudinary-widget,
+.cloudinary-widget-overlay {
   z-index: 10000 !important;
 }
 
