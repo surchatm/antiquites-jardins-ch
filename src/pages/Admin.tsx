@@ -53,17 +53,12 @@ const antiqueSchema = z.object({
   image_url: z.string().url("URL d'image invalide").optional().or(z.literal("")),
 });
 
-// Google Drive Picker configuration
+// Cloudinary configuration
 declare global {
   interface Window {
-    gapi: any;
-    google: any;
+    cloudinary: any;
   }
 }
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || "";
-const GOOGLE_SCOPES = "https://www.googleapis.com/auth/drive.readonly";
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
@@ -84,9 +79,25 @@ const Admin = () => {
     image_url: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [googleDriveLoading, setGoogleDriveLoading] = useState(false);
-  const [gapiLoaded, setGapiLoaded] = useState(false);
-  const [gisLoaded, setGisLoaded] = useState(false);
+  const [cloudinaryLoading, setCloudinaryLoading] = useState(false);
+  const [cloudinaryLoaded, setCloudinaryLoaded] = useState(false);
+  const [cloudinaryConfig, setCloudinaryConfig] = useState<{ cloudName: string; apiKey: string } | null>(null);
+
+  // Fetch Cloudinary configuration from edge function
+  useEffect(() => {
+    const fetchCloudinaryConfig = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('cloudinary-config');
+        if (error) throw error;
+        if (data?.cloudName && data?.apiKey) {
+          setCloudinaryConfig(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch Cloudinary config:', error);
+      }
+    };
+    fetchCloudinaryConfig();
+  }, []);
 
   // Sync local state with server data
   useEffect(() => {
@@ -128,136 +139,87 @@ const Admin = () => {
     }
   };
 
-  // Load Google API scripts
+  // Load Cloudinary Media Library widget script
   useEffect(() => {
-    // Load GAPI
-    const gapiScript = document.createElement("script");
-    gapiScript.src = "https://apis.google.com/js/api.js";
-    gapiScript.async = true;
-    gapiScript.defer = true;
-    gapiScript.onload = () => {
-      window.gapi.load("picker", () => {
-        setGapiLoaded(true);
-      });
-    };
-    document.body.appendChild(gapiScript);
+    if (window.cloudinary) {
+      setCloudinaryLoaded(true);
+      return;
+    }
 
-    // Load GIS (Google Identity Services)
-    const gisScript = document.createElement("script");
-    gisScript.src = "https://accounts.google.com/gsi/client";
-    gisScript.async = true;
-    gisScript.defer = true;
-    gisScript.onload = () => {
-      setGisLoaded(true);
+    const script = document.createElement("script");
+    script.src = "https://media-library.cloudinary.com/global/all.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setCloudinaryLoaded(true);
     };
-    document.body.appendChild(gisScript);
+    document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(gapiScript);
-      document.body.removeChild(gisScript);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
-  const handleGoogleDriveClick = async () => {
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) {
-      toast.error("Configuration Google Drive manquante. Contactez l'administrateur.");
+  const handleCloudinaryClick = () => {
+    if (!cloudinaryConfig?.cloudName || !cloudinaryConfig?.apiKey) {
+      toast.error("Configuration Cloudinary manquante. Contactez l'administrateur.");
       return;
     }
 
-    if (!gapiLoaded || !gisLoaded) {
-      toast.error("Chargement de Google Drive en cours...");
+    if (!cloudinaryLoaded || !window.cloudinary) {
+      toast.error("Chargement de Cloudinary en cours...");
       return;
     }
 
-    setGoogleDriveLoading(true);
+    setCloudinaryLoading(true);
 
     try {
-      // Get OAuth token
-      const tokenClient = window.google.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: GOOGLE_SCOPES,
-        callback: (response: any) => {
-          if (response.access_token) {
-            setTimeout(() => openPicker(response.access_token), 100);
-          } else {
-            setGoogleDriveLoading(false);
-            toast.error("Erreur d'authentification Google");
-          }
+      const mediaLibrary = window.cloudinary.createMediaLibrary(
+        {
+          cloud_name: cloudinaryConfig.cloudName,
+          api_key: cloudinaryConfig.apiKey,
+          multiple: false,
+          max_files: 1,
+          insert_caption: "Sélectionner",
+          default_transformations: [[]],
         },
-      });
-
-      tokenClient.requestAccessToken({ prompt: "" });
-    } catch (error: any) {
-      setGoogleDriveLoading(false);
-      toast.error("Erreur Google Drive: " + error.message);
-    }
-  };
-
-  const openPicker = (accessToken: string) => {
-    // Create a DocsView for images sorted by last modified
-    const view = new window.google.picker.DocsView()
-      .setMimeTypes('image/png,image/jpeg,image/webp,image/gif')
-      .setIncludeFolders(true)
-      .setSelectFolderEnabled(false);
-
-    const picker = new window.google.picker.PickerBuilder()
-      .addView(view)
-      .setOAuthToken(accessToken)
-      .setDeveloperKey(GOOGLE_API_KEY)
-      .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
-      .setCallback(async (data: any) => {
-        if (data.action === window.google.picker.Action.PICKED) {
-          const file = data.docs[0];
-          
-          // Use thumbnailLink from picker or construct proper URL
-          // Google Drive's lh3.googleusercontent.com URLs work better for embedding
-          let imageUrl = '';
-          
-          if (file.thumbnails && file.thumbnails.length > 0) {
-            // Get the largest thumbnail available
-            const largestThumb = file.thumbnails[file.thumbnails.length - 1];
-            // Remove size constraint to get full resolution
-            imageUrl = largestThumb.url.replace(/=s\d+$/, '=s1360');
-          } else if (file.iconUrl) {
-            // Fallback: use the file URL but with lh3.googleusercontent.com format
-            // Try to fetch the webContentLink through Drive API
-            try {
-              const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files/${file.id}?fields=webContentLink,thumbnailLink&key=${GOOGLE_API_KEY}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                }
-              );
-              const fileData = await response.json();
-              if (fileData.thumbnailLink) {
-                // Use thumbnailLink and increase size
-                imageUrl = fileData.thumbnailLink.replace(/=s\d+$/, '=s1360');
-              } else if (fileData.webContentLink) {
-                imageUrl = fileData.webContentLink;
-              } else {
-                // Ultimate fallback
-                imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
-              }
-            } catch {
-              imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
+        {
+          insertHandler: (data: any) => {
+            if (data.assets && data.assets.length > 0) {
+              const asset = data.assets[0];
+              // Use the secure CDN URL
+              const imageUrl = asset.secure_url || asset.url;
+              setFormData((prev) => ({ ...prev, image_url: imageUrl }));
+              toast.success("Image sélectionnée depuis Cloudinary");
             }
-          } else {
-            // Fallback using thumbnail API
-            imageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1360`;
-          }
-          
-          setFormData((prev) => ({ ...prev, image_url: imageUrl }));
-          toast.success("Image sélectionnée depuis Google Drive");
-          setGoogleDriveLoading(false);
-        } else if (data.action === window.google.picker.Action.CANCEL) {
-          setGoogleDriveLoading(false);
+            setCloudinaryLoading(false);
+          },
         }
-      })
-      .build();
+      );
 
-    picker.setVisible(true);
+      mediaLibrary.show();
+
+      // Handle close without selection
+      const checkClosed = setInterval(() => {
+        const widget = document.querySelector('.cloudinary-widget');
+        if (!widget) {
+          clearInterval(checkClosed);
+          setCloudinaryLoading(false);
+        }
+      }, 500);
+
+      // Cleanup after 60 seconds max
+      setTimeout(() => {
+        clearInterval(checkClosed);
+        setCloudinaryLoading(false);
+      }, 60000);
+
+    } catch (error: any) {
+      setCloudinaryLoading(false);
+      toast.error("Erreur Cloudinary: " + error.message);
+    }
   };
 
 
@@ -432,12 +394,12 @@ const Admin = () => {
             <Dialog
               open={isDialogOpen}
               onOpenChange={(open) => {
-                // Prevent closing while Google Drive picker is open
-                if (!open && googleDriveLoading) return;
+                // Prevent closing while Cloudinary picker is open
+                if (!open && cloudinaryLoading) return;
                 setIsDialogOpen(open);
                 if (!open) resetForm();
               }}
-              modal={!googleDriveLoading}
+              modal={!cloudinaryLoading}
             >
               <DialogTrigger asChild>
                 <Button variant="elegant" className="w-full sm:w-auto">
@@ -449,15 +411,15 @@ const Admin = () => {
                 className="sm:max-w-lg" 
                 onPointerDownOutside={(e) => {
                   // Prevent closing when clicking outside while picker is active
-                  if (googleDriveLoading) e.preventDefault();
+                  if (cloudinaryLoading) e.preventDefault();
                 }}
                 onOpenAutoFocus={(e) => {
-                  // Prevent focus trap from interfering with Google Drive picker
-                  if (googleDriveLoading) e.preventDefault();
+                  // Prevent focus trap from interfering with Cloudinary picker
+                  if (cloudinaryLoading) e.preventDefault();
                 }}
                 onInteractOutside={(e) => {
-                  // Allow interaction with Google Drive picker iframe
-                  if (googleDriveLoading) e.preventDefault();
+                  // Allow interaction with Cloudinary picker iframe
+                  if (cloudinaryLoading) e.preventDefault();
                 }}
               >
                 <DialogHeader>
@@ -520,8 +482,8 @@ const Admin = () => {
                   <ImageUploader
                     value={formData.image_url}
                     onChange={(url) => setFormData({ ...formData, image_url: url })}
-                    onGoogleDriveClick={handleGoogleDriveClick}
-                    googleDriveLoading={googleDriveLoading}
+                    onCloudinaryClick={handleCloudinaryClick}
+                    cloudinaryLoading={cloudinaryLoading}
                   />
                   {formErrors.image_url && (
                     <p className="text-xs text-destructive">

@@ -1,20 +1,26 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useImageUpload } from "@/hooks/useImageUpload";
-import { Upload, Link as LinkIcon, Loader2, X, FolderOpen } from "lucide-react";
+import { Upload, Link as LinkIcon, Loader2, X, Cloud } from "lucide-react";
 import { toast } from "sonner";
+
+declare global {
+  interface Window {
+    cloudinary: any;
+  }
+}
 
 interface ImageUploaderProps {
   value: string;
   onChange: (url: string) => void;
-  onGoogleDriveClick: () => void;
-  googleDriveLoading?: boolean;
+  onCloudinaryClick: () => void;
+  cloudinaryLoading?: boolean;
 }
 
-const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading }: ImageUploaderProps) => {
+const ImageUploader = ({ value, onChange, onCloudinaryClick, cloudinaryLoading }: ImageUploaderProps) => {
   const { uploadImage, uploading } = useImageUpload();
   const [urlInput, setUrlInput] = useState(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,11 +87,11 @@ const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading
       )}
 
       {!value && (
-        <Tabs defaultValue="drive" className="w-full">
+        <Tabs defaultValue="cloudinary" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="drive">
-              <FolderOpen className="w-4 h-4 mr-1" />
-              Drive
+            <TabsTrigger value="cloudinary">
+              <Cloud className="w-4 h-4 mr-1" />
+              Cloud
             </TabsTrigger>
             <TabsTrigger value="upload">
               <Upload className="w-4 h-4 mr-1" />
@@ -126,11 +132,11 @@ const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading
             </div>
           </TabsContent>
           
-          <TabsContent value="drive" className="mt-3">
+          <TabsContent value="cloudinary" className="mt-3">
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6">
-              <FolderOpen className="w-8 h-8 text-muted-foreground mb-2" />
+              <Cloud className="w-8 h-8 text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground text-center mb-3">
-                Sélectionnez une image depuis Google Drive
+                Sélectionnez une image depuis Cloudinary
               </p>
               <Button
                 type="button"
@@ -138,17 +144,17 @@ const ImageUploader = ({ value, onChange, onGoogleDriveClick, googleDriveLoading
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onGoogleDriveClick();
+                  onCloudinaryClick();
                 }}
-                disabled={googleDriveLoading}
+                disabled={cloudinaryLoading}
                 style={{ pointerEvents: 'auto' }}
               >
-                {googleDriveLoading ? (
+                {cloudinaryLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
-                  <FolderOpen className="w-4 h-4 mr-2" />
+                  <Cloud className="w-4 h-4 mr-2" />
                 )}
-                Ouvrir Google Drive
+                Ouvrir Cloudinary
               </Button>
             </div>
           </TabsContent>
