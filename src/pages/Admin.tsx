@@ -180,6 +180,7 @@ const Admin = () => {
         {
           cloud_name: cloudinaryConfig.cloudName,
           api_key: cloudinaryConfig.apiKey,
+          folder: { path: "antiquites-jardins", resource_type: "image" },
           multiple: false,
           max_files: 1,
           insert_caption: "Sélectionner",
