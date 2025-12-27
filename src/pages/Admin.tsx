@@ -185,6 +185,7 @@ const Admin = () => {
           max_files: 1,
           insert_caption: "Sélectionner",
           default_transformations: [[]],
+          button_caption: ""
         },
         {
           insertHandler: (data: any) => {
