@@ -26,7 +26,7 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!captchaChecked) {
       toast.error("Veuillez confirmer que vous n'êtes pas un robot");
       return;
@@ -39,20 +39,24 @@ const Contact = () => {
 
     setIsSubmitting(true);
 
-    // Create mailto link with form data
-    const subject = encodeURIComponent(formData.subject || `Message de ${formData.name}`);
-    const body = encodeURIComponent(
-      `Nom: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    );
-    
-    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${body}`;
-    
-    toast.success("Votre client email va s'ouvrir avec votre message");
-    setIsSubmitting(false);
-    
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setCaptchaChecked(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error();
+
+      toast.success("Votre message a bien été envoyé");
+
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setCaptchaChecked(false);
+    } catch {
+      toast.error("Erreur lors de l'envoi du message");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const openWhatsApp = () => {
@@ -235,6 +239,7 @@ const Contact = () => {
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" />
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-sm font-medium">
