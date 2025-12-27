@@ -184,12 +184,6 @@ div[class*="cloudinary"] {
   pointer-events: none !important;
 }
 
-/* Hide unnecessary upload button from Cloudinary widget */
-.cloudinary-media-library .upload-button,
-.cloudinary-media-library button[data-test="upload-btn"] {
-  display: none !important;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

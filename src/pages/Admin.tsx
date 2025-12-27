@@ -223,6 +223,22 @@ const Admin = () => {
     }
   };
 
+  useEffect(() => {
+    // Hide upload button: "Importer"
+    const style = document.createElement('style');
+    style.textContent = `
+    .cloudinary-media-library .upload-button,
+    .cloudinary-media-library button[data-test="upload-btn"] {
+      display: none !important;
+    }
+  `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (!loading && !user) {
