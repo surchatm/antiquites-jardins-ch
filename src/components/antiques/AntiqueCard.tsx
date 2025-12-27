@@ -18,12 +18,12 @@ const AntiqueCard = ({ title, description, price, imageUrl }: AntiqueCardProps) 
 
   return (
     <Card className="group overflow-hidden border-border/50 bg-card shadow-card hover:shadow-elegant transition-all duration-500">
-      <div className="overflow-hidden bg-muted md:max-h-[420px] flex items-center justify-center">
+      <div className="overflow-hidden bg-muted">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105 md:max-h-[420px]"
+            className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
           <div className="aspect-[4/3] flex items-center justify-center bg-secondary">
