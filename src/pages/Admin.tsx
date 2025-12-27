@@ -202,34 +202,12 @@ const Admin = () => {
 
       mediaLibrary.show();
 
-      mediaLibrary.show();
-
-      // Inject CSS to hide upload button after widget loads
-      setTimeout(() => {
-        const style = document.createElement('style');
-        style.id = 'cloudinary-custom-styles';
-        style.textContent = `
-        .cloudinary-media-library .upload-button,
-        .cloudinary-media-library button[data-test="upload-btn"],
-        iframe[id*="cloudinary"] button[data-test="upload-btn"],
-        .upload-button {
-          display: none !important;
-        }
-      `;
-        document.head.appendChild(style);
-      }, 500);
-
       // Handle close without selection
       const checkClosed = setInterval(() => {
         const widget = document.querySelector('.cloudinary-widget');
         if (!widget) {
           clearInterval(checkClosed);
           setCloudinaryLoading(false);
-          // Remove custom styles when widget closes
-          const customStyle = document.getElementById('cloudinary-custom-styles');
-          if (customStyle) {
-            document.head.removeChild(customStyle);
-          }
         }
       }, 500);
 
