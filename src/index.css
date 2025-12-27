@@ -151,10 +151,37 @@
   }
 }
 
-/* Cloudinary Media Library Widget should be above our dialogs */
+/* Cloudinary Media Library Widget - ensure full interactivity */
+.cloudinary-overlay,
 .cloudinary-widget,
-.cloudinary-widget-overlay {
-  z-index: 10000 !important;
+.cloudinary-widget-overlay,
+.cloudinary-thumbnails,
+.cloudinary-fileupload,
+.cloudinary-button,
+[class*="cloudinary"],
+iframe[src*="cloudinary"],
+iframe[src*="media-library"] {
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure Cloudinary modal backdrop is above everything */
+body > div[style*="z-index"]:has(iframe[src*="cloudinary"]),
+body > div[style*="z-index"]:has(iframe[src*="media-library"]) {
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Cloudinary iframe container */
+div[id*="cloudinary"],
+div[class*="cloudinary"] {
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure our dialog doesn't trap focus when Cloudinary is open */
+[data-radix-focus-guard] {
+  pointer-events: none !important;
 }
 
 @keyframes fadeIn {
