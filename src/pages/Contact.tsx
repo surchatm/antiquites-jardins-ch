@@ -9,7 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import ReCAPTCHA from "react-google-recaptcha";
 import boutiqueImage from "@/assets/boutique.webp";
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      reset: () => void;
+      execute: () => void;
+    };
+  }
+}
 
 const RECIPIENT_EMAIL = "eric.surchat@antiquites-jardins.ch";
 const PHONE_NUMBER = "+41794587820";
@@ -21,13 +31,13 @@ const Contact = () => {
     subject: "",
     message: "",
   });
-  const [captchaChecked, setCaptchaChecked] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!captchaChecked) {
+    if (!captchaToken) {
       toast.error("Veuillez confirmer que vous n'êtes pas un robot");
       return;
     }
@@ -43,15 +53,20 @@ const Contact = () => {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, captchaToken }),
       });
 
       if (!res.ok) throw new Error();
 
       toast.success("Votre message a bien été envoyé");
 
+      // Reset form fields
       setFormData({ name: "", email: "", subject: "", message: "" });
-      setCaptchaChecked(false);
+      setCaptchaToken(null);
+      if (window.grecaptcha) {
+        window.grecaptcha.reset();
+      }
+
     } catch {
       toast.error("Erreur lors de l'envoi du message");
     } finally {
@@ -300,25 +315,12 @@ const Contact = () => {
                       />
                     </div>
 
-                    {/* Simple Captcha */}
-                    <div className="flex items-start space-x-3 p-4 bg-muted/50 rounded-lg border border-border/50">
-                      <Checkbox
-                        id="captcha"
-                        checked={captchaChecked}
-                        onCheckedChange={(checked) => setCaptchaChecked(checked as boolean)}
-                        className="mt-0.5"
+                    {/* ReCAPTCHA */}
+                    <div className="my-4">
+                      <ReCAPTCHA
+                        sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                        onChange={(token) => setCaptchaToken(token)}
                       />
-                      <div className="grid gap-1 leading-none">
-                        <Label
-                          htmlFor="captcha"
-                          className="text-sm font-medium cursor-pointer"
-                        >
-                          Je ne suis pas un robot
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Cochez cette case pour confirmer que vous êtes un humain
-                        </p>
-                      </div>
                     </div>
 
                     <Button 
