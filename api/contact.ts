@@ -1,5 +1,18 @@
 import { Resend } from "resend";
 
+const verifyCaptcha = async (token: string) => {
+  const res = await fetch(
+    "https://www.google.com/recaptcha/api/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`,
+    }
+  );
+  const data = await res.json();
+  return data.success;
+};
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: any, res: any) {
@@ -8,10 +21,15 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { name, email, subject, message, company } = req.body;
+    const { name, email, subject, message, company, captchaToken } = req.body;
 
-    // Honeypot spam protection
+    // Honeypot spam check
     if (company) return res.status(200).json({ success: true });
+
+    // ReCAPTCHA verification
+    if (!captchaToken || !(await verifyCaptcha(captchaToken))) {
+      return res.status(400).json({ error: "ReCAPTCHA verification failed" });
+    }
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: "Missing required fields" });
