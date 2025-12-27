@@ -183,7 +183,7 @@ const Admin = () => {
           folder: { path: "antiquites-jardins", resource_type: "image" },
           multiple: false,
           max_files: 1,
-          insert_caption: "Sélectionner",
+          insert_caption: "Choisir image pour article",
           default_transformations: [[]]
         },
         {
